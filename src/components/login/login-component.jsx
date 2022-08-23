@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "./login-component.styles.jsx";
 import MyButton from "../button/button-component";
 import { loginButton } from "./login-component.styles.jsx";
+import { DOMAIN } from "../../utilities/utils";
 import {
   LoginContainer,
   FormContainer,
@@ -35,7 +36,7 @@ const Login = () => {
       e.preventDefault();
 
       const data = await axios.post(
-        "http://127.0.0.1:8000/api/v1/members/login",
+        `${DOMAIN.localhost}/api/v1/members/login`,
         {
           email: value1,
           password: value2,
@@ -45,7 +46,7 @@ const Login = () => {
       dispatch(setUser(data.data));
       navigate("/");
     } catch (err) {
-      console.log(err);
+      alert("incorrect email address or password please check and try again");
     }
   };
 
@@ -73,7 +74,7 @@ const Login = () => {
           <Paragraph>
             Don't have an account?
             <span>
-              <Link to={"/sign-up"}>signUp</Link>
+              <Link to={"/sign-up"}> signUp</Link>
             </span>
           </Paragraph>
           <ButtonContainer>

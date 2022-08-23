@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { setUser } from "../../store/redux-slices/user-slice";
 import { useNavigate } from "react-router-dom";
 import MyButton from "../button/button-component";
+import { DOMAIN } from "../../utilities/utils";
 import {
   SignUpContainer,
   FormContainer,
@@ -40,7 +41,7 @@ const SignUp = () => {
       e.preventDefault();
 
       const data = await axios.post(
-        "http://127.0.0.1:8000/api/v1/members/sign-up",
+        `${DOMAIN.localhost}/api/v1/members/sign-up`,
         {
           name,
           email,

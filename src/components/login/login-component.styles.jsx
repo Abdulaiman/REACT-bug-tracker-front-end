@@ -35,7 +35,7 @@ export const Input = styled.input`
   box-shadow: 2px 2px 2px 2px #888888;
   font-size: 1.3rem;
   padding-left: 0.5rem;
-  background-color: ${darkGrey2};
+  background-color: ${lightGrey};
 `;
 export const LoginStyle = styled.div`
   display: flex;
@@ -54,6 +54,7 @@ export const LoginStyle = styled.div`
 export const Paragraph = styled.p`
   margin-top: 0.75rem;
   margin-left: 2.2rem;
+  color: ${darkGrey};
 `;
 
 export const ButtonContainer = styled.div`
