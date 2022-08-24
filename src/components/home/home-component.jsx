@@ -1,6 +1,5 @@
 import axios from "axios";
-import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { DOMAIN } from "../../utilities/utils";
 import "chart.js/auto";
 import { Doughnut } from "react-chartjs-2";

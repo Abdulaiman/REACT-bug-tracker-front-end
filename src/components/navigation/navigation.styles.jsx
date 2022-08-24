@@ -41,7 +41,7 @@ font-size: 2.5rem;
 export const Links = Styled(Link)`
 text-decoration: none;
 font-size: 1.3rem;
-color: ${lightGrey};
+color: ${darkGrey2};
 @media (max-width: 1160px) {
  font-size: 1rem;
 }

@@ -3,7 +3,6 @@ const darkGrey = `#696969`;
 export const ChartParentContainer = Styled.div`
 display:flex;
 flex-wrap: wrap;
-
 `;
 export const ChartContainer = Styled.div`
 display: flex; 

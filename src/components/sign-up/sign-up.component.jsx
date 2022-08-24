@@ -50,8 +50,7 @@ const SignUp = () => {
         }
       );
       localStorage.setItem("token", data.data.token);
-      dispatch(setUser(data.data));
-      console.log({ name, email, password, passwordConfirm });
+      localStorage.setItem("user", JSON.stringify(data.data));
       navigate("/");
     } catch (err) {
       console.log(err);

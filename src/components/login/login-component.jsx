@@ -43,7 +43,7 @@ const Login = () => {
         }
       );
       localStorage.setItem("token", data.data.token);
-      dispatch(setUser(data.data));
+      localStorage.setItem("user", JSON.stringify(data.data));
       navigate("/");
     } catch (err) {
       alert("incorrect email address or password please check and try again");
