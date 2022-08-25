@@ -32,6 +32,15 @@ function App() {
         }
       />
       <Route
+        path="/projects/:projectName/:ticketName"
+        element={
+          <ProtectedRoute>
+            <Navigation />
+            <Ticket />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/projects"
         element={
           <ProtectedRoute>

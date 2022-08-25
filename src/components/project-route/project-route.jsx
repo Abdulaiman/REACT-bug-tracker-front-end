@@ -74,6 +74,8 @@ const Project = () => {
                 backgroundColor: "#ffffff",
                 color: "black",
                 marginTop: "5rem",
+                border: "none",
+                boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
               }}
             >
               <Card.Title
@@ -138,7 +140,14 @@ const Project = () => {
           </Col>
           {user.data.role === "admin" ? (
             <Col sm={4}>
-              <Card style={{ color: "darkGrey", marginTop: "5rem" }}>
+              <Card
+                style={{
+                  color: "darkGrey",
+                  marginTop: "5rem",
+                  border: "none",
+                  boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+                }}
+              >
                 <Card.Body>
                   <Card.Title
                     style={{ color: `${darkGrey}`, fontSize: "2rem" }}

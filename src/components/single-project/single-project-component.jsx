@@ -1,24 +1,84 @@
-import { Button, Container, Form, Row, Col, Card } from "react-bootstrap";
+import {
+  Button,
+  Container,
+  Form,
+  Row,
+  Col,
+  Card,
+  FormControl,
+} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { ProjectDiv } from "./single-project-styles";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { projectSelector } from "../../store/selectors/redux-selectors.";
-import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { DOMAIN } from "../../utilities/utils";
 const SingleProject = () => {
+  const [tickets, setTickets] = useState();
   const [project, setProject] = useState();
-  const dispatch = useDispatch();
+  const [title, setTitle] = useState();
+  const [feature, setFeature] = useState();
+  const [type, setType] = useState();
+  const [browser, setBrowser] = useState();
+  const [operatingSystem, setOperatingSystem] = useState();
+  const [foundIn, setFoundIn] = useState();
+  const [priority, setPriority] = useState();
+
+  const [description, setDescription] = useState();
+  const [newName, setNewName] = useState();
+  const [newDescription, setNewDescription] = useState();
+  const user = JSON.parse(localStorage.getItem("user"));
+  const onTitleChangeHandler = (e) => {
+    setTitle(e.target.value);
+  };
+  const onFeatureChangeHandler = (e) => {
+    setFeature(e.target.value);
+  };
+  const onTypeChangeHandler = (e) => {
+    setType(e.target.value);
+  };
+  const onBrowserChangeHandler = (e) => {
+    setBrowser(e.target.value);
+  };
+  const onOperatingSystemChangeHandler = (e) => {
+    setOperatingSystem(e.target.value);
+  };
+  const onFoundInChangeHandler = (e) => {
+    setFoundIn(e.target.value);
+  };
+  const onPriorityChangeHandler = (e) => {
+    setPriority(e.target.value);
+  };
+  const onDescriptionChangeHandler = (e) => {
+    setDescription(e.target.value);
+  };
+  const onNewNameChange = (e) => {
+    setNewName(e.target.value);
+  };
+  const onNewDescriptionChange = (e) => {
+    setNewDescription(e.target.value);
+  };
+  const navigate = useNavigate();
+
+  // console.log({
+  //   title,
+  //   type,
+  //   feature,
+  //   browser,
+  //   operatingSystem,
+  //   foundIn,
+  //   priority,
+  //   description,
+  // });
   const darkGrey = `#696969`;
   const primaryColor = `#3399cc`;
   const lightGrey = `	#F5F5F5`;
   const projectId = localStorage.getItem("projectId");
-  console.log(projectId);
-
+  const token = localStorage.getItem("token");
   useEffect(() => {
-    const token = localStorage.getItem("token");
     const getProjectDetails = async () => {
       const projectDetails = await axios.get(
         `${DOMAIN.localhost}/api/v1/projects/${projectId}`,
@@ -30,7 +90,53 @@ const SingleProject = () => {
       setProject(projectDetails);
     };
     getProjectDetails();
-  }, [projectId]);
+  }, [projectId, token]);
+
+  const onSubmitHandler = async () => {
+    const tickets = await axios.post(
+      `${DOMAIN.localhost}/api/v1/projects/${projectId}/tickets`,
+      {
+        type,
+        feature,
+        browser,
+        operatingSystem,
+        foundIn,
+        priority,
+        description,
+      },
+      { headers: { authorization: `Bearer ${token}` } }
+    );
+    console.log(tickets);
+    setTickets(tickets);
+  };
+  const onSubmitEditProjectHandler = async () => {
+    const updatedProject = await axios.patch(
+      `${DOMAIN.localhost}/api/v1/projects/${projectId}`,
+      {
+        name: newName,
+        description: newDescription,
+      },
+      { headers: { authorization: `Bearer ${token}` } }
+    );
+    console.log(updatedProject);
+  };
+  const onDeleteHandler = async (e) => {
+    e.preventDefault();
+    navigate(-1);
+    await axios.delete(`${DOMAIN.localhost}/api/v1/projects/${projectId}`, {
+      headers: { authorization: `Bearer ${token}` },
+    });
+  };
+  // console.log({
+  //   title,
+  //   type,
+  //   feature,
+  //   browser,
+  //   operatingSystem,
+  //   foundIn,
+  //   priority,
+  //   description,
+  // });
   return (
     <div style={{ backgroundColor: `${lightGrey}` }}>
       <Container fluid>
@@ -85,6 +191,26 @@ const SingleProject = () => {
                         fontSize: "3rem",
                       }}
                     >
+                      CreatedAt:
+                    </Col>
+                    <Col
+                      style={{
+                        fontSize: "2rem",
+                      }}
+                    >
+                      {project?.data?.project?.createdAt.slice(0, 10)}
+                    </Col>
+                  </Row>
+                  <Row
+                    style={{
+                      fontSize: "4rem",
+                    }}
+                  >
+                    <Col
+                      style={{
+                        fontSize: "3rem",
+                      }}
+                    >
                       Description:
                     </Col>
                     <Col
@@ -96,12 +222,59 @@ const SingleProject = () => {
                     </Col>
                   </Row>
 
-                  {/* <ProjectDiv
-                    style={{
-                      flexDirection: "column",
-                      alignItems: "flex-start",
-                    }}
-                  ></ProjectDiv> */}
+                  {user.data.role === "admin" ? (
+                    <Form>
+                      <Form.Group className="mb-3">
+                        <Form.Label htmlFor="changeProjectName">
+                          Edit name
+                        </Form.Label>
+                        <Form.Control
+                          placeholder="new name"
+                          id={"changeProjectName"}
+                          onChange={onNewNameChange}
+                        />
+                      </Form.Group>
+                      <Form.Group className="mb-3">
+                        <Form.Label htmlFor="changeProject description">
+                          Edit description
+                        </Form.Label>
+                        <Form.Control
+                          placeholder="new description"
+                          id={"changeProject description"}
+                          onChange={onNewDescriptionChange}
+                        />
+                      </Form.Group>
+                      <Button
+                        type={"submit"}
+                        style={{ backgroundColor: `${primaryColor}` }}
+                        onClick={onSubmitEditProjectHandler}
+                      >
+                        EDIT PROJECT
+                      </Button>
+                      <ProjectDiv
+                        style={{
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Button
+                          type={"submit"}
+                          onClick={onDeleteHandler}
+                          style={{
+                            backgroundColor: "red",
+                            border: "none",
+                            fontSize: "1.5rem",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          DELETE PROJECT
+                        </Button>
+                      </ProjectDiv>
+                    </Form>
+                  ) : (
+                    ""
+                  )}
                 </Card.Body>
               </Card>
             </Row>
@@ -121,45 +294,113 @@ const SingleProject = () => {
                     CREATE A NEW TICKET
                   </Card.Title>
                   <Form>
-                    <fieldset>
-                      <Form.Group className="mb-3">
-                        <Form.Label htmlFor="titleInput">Title</Form.Label>
-                        <Form.Control
-                          id="titleInput"
-                          placeholder="title"
-                          // onChange={getName}
-                        />
-                      </Form.Group>
-                      <Form.Group className="mb-3">
-                        <Form.Label htmlFor="descriptionInput">
-                          Description
-                        </Form.Label>
-                        <Form.Control
-                          as="textarea"
-                          row={3}
-                          id="descriptionInput"
-                          placeholder={"Description"}
-                          // onChange={getDescription}
-                        />
-                        {/* <Form.Group>
-                        <Form.Label htmlFor={"developers"}>
-                          developers
-                        </Form.Label>
-                        <Form.Select id="disabledSelect" onChange={getTitle}>
-                          <option>Disabled select</option>
-                          <option>Disabled select</option>
-                          <option>Disabled select</option>
-                        </Form.Select>
-                      </Form.Group> */}
-                      </Form.Group>
-                      <Button
-                        type="submit"
-                        style={{ backgroundColor: `${primaryColor}` }}
-                        // onClick={onSubmitHandler}
+                    <Form.Group className="mb-3">
+                      <Form.Label htmlFor="titleInput">Title</Form.Label>
+                      <Form.Control
+                        id="titleInput"
+                        placeholder="title"
+                        onChange={onTitleChangeHandler}
+                      />
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                      <Form.Label htmlFor={"featureInput"}>feature</Form.Label>
+                      <FormControl
+                        id="featureInput"
+                        placeholder="feature"
+                        onChange={onFeatureChangeHandler}
+                      />
+                    </Form.Group>
+
+                    <Form.Group>
+                      <Form.Label htmlFor={"typeOfBug"}>type</Form.Label>
+                      <Form.Select
+                        id="typeOfBug"
+                        onChange={onTypeChangeHandler}
                       >
-                        Submit
-                      </Button>
-                    </fieldset>
+                        <option>select</option>
+                        <option>bug</option>
+                        <option>feature request</option>
+                        <option>others</option>
+                      </Form.Select>
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label htmlFor={"typeOfBrowser"}>Browser</Form.Label>
+                      <Form.Select
+                        id="typeOfBrowser"
+                        onChange={onBrowserChangeHandler}
+                      >
+                        <option>select</option>
+                        <option>chrome</option>
+                        <option>firefox</option>
+                        <option>safari</option>
+                        <option>internet explorer</option>
+                        <option>microsoft edge</option>
+                        <option>opera</option>
+                        <option>mobile</option>
+                      </Form.Select>
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label htmlFor={"typeOfOperatingSyster"}>
+                        Operating system
+                      </Form.Label>
+                      <Form.Select
+                        id="typeOfOperatingSyster"
+                        onChange={onOperatingSystemChangeHandler}
+                      >
+                        <option>select</option>
+                        <option>mac Os</option>
+                        <option>linux</option>
+                        <option>windows</option>
+                        <option>mobile: Android</option>
+                        <option>mobile: Ios</option>
+                      </Form.Select>
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label htmlFor={"findIn"}>Found in</Form.Label>
+                      <Form.Select
+                        id="findIn"
+                        onChange={onFoundInChangeHandler}
+                      >
+                        <option>select</option>
+                        <option>Production</option>
+                        <option>development</option>
+                        <option>testing</option>
+                      </Form.Select>
+                    </Form.Group>
+                    <Form.Group>
+                      <Form.Label htmlFor={"typeOfPriotity"}>
+                        priority
+                      </Form.Label>
+                      <Form.Select
+                        id="typeOfPriotity"
+                        onChange={onPriorityChangeHandler}
+                      >
+                        <option>select</option>
+                        <option>medium</option>
+                        <option>high</option>
+                        <option>critical</option>
+                        <option>critical high-priority</option>
+                      </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                      <Form.Label htmlFor="descriptionInput">
+                        Description
+                      </Form.Label>
+                      <Form.Control
+                        as="textarea"
+                        row={4}
+                        id="descriptionInput"
+                        placeholder={"Description"}
+                        onChange={onDescriptionChangeHandler}
+                      />
+                    </Form.Group>
+                    <Button
+                      type="submit"
+                      style={{ backgroundColor: `${primaryColor}` }}
+                      onClick={onSubmitHandler}
+                    >
+                      Submit
+                    </Button>
                   </Form>
                 </Card.Body>
               </Card>
@@ -183,7 +424,9 @@ const SingleProject = () => {
                   color: `${darkGrey}`,
                 }}
               >
-                {`ALL TICKETS (${project?.data?.project?.tickets.length})`}
+                {`ALL TICKETS (${
+                  project?.data?.project?.tickets?.length || 0
+                })`}
               </Card.Title>
               <ProjectDiv style={{ backgroundColor: "#ffffff" }}>
                 <Card.Title
@@ -192,7 +435,7 @@ const SingleProject = () => {
                     color: `${darkGrey}`,
                   }}
                 >
-                  Title
+                  Type
                 </Card.Title>
                 <Card.Title
                   style={{
@@ -219,22 +462,22 @@ const SingleProject = () => {
                   Details
                 </Card.Title>
               </ProjectDiv>
-              {project?.data?.project.tickets?.map((project) => {
+              {project?.data?.project.tickets?.map((ticket) => {
                 return (
-                  <ProjectDiv key={project._id}>
+                  <ProjectDiv key={ticket._id}>
                     <h3 style={{ color: `${darkGrey}`, fontSize: "1.5rem" }}>
-                      {project?.title}
+                      {ticket?.type}
                     </h3>
                     <h5 style={{ color: `${darkGrey}` }}>
-                      {project?.createdAt.slice(0, 10)}
+                      {ticket?.createdAt.slice(0, 10)}
                     </h5>
-                    <h5 style={{ color: `${darkGrey}` }}>
-                      {project?.priority}
-                    </h5>
-                    <Link to={`/projects/${project.title}`}>
+                    <h5 style={{ color: `${darkGrey}` }}>{ticket?.priority}</h5>
+                    <Link
+                      to={`/projects/${project?.data?.project?.name}/${ticket.title}`}
+                    >
                       <Button
                         onClick={() => {
-                          localStorage.setItem("projectId", project._id);
+                          localStorage.setItem("ticketId", ticket._id);
                         }}
                         style={{ backgroundColor: `${primaryColor}` }}
                       >
