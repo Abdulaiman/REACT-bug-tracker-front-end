@@ -8,6 +8,9 @@ import Project from "./components/project-route/project-route";
 import SingleProject from "./components/single-project/single-project-component";
 import SignUp from "./components/sign-up/sign-up.component";
 import Navigation from "./components/navigation/navigation-component";
+import MyTicket from "./components/my-tickets/my-ticket-component";
+import Profile from "./components/profile/profile-component";
+
 function App() {
   return (
     <Routes>
@@ -32,11 +35,37 @@ function App() {
         }
       />
       <Route
+        path="/tickets"
+        element={
+          <ProtectedRoute>
+            <Navigation />
+            <MyTicket />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/manage-users"
+        element={
+          <ProtectedRoute>
+            <Navigation />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/projects/:projectName/:ticketName"
         element={
           <ProtectedRoute>
             <Navigation />
             <Ticket />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Navigation />
+            <Profile />
           </ProtectedRoute>
         }
       />

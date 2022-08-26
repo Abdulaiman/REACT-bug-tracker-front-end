@@ -19,7 +19,7 @@ export const Navigation = () => {
         <LinksContainer as={"ul"}>
           <Links to={"/projects"}>PROJECTS</Links>
 
-          <Links to={"/Tickets"}>TICKETS</Links>
+          <Links to={"/tickets"}>TICKETS</Links>
 
           <Links to={"/profile"}>PROFILE</Links>
           <Links to={"/login"} onClick={logoutHandler}>

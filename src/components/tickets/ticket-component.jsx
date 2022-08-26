@@ -7,13 +7,14 @@ import {
   Card,
   FormControl,
 } from "react-bootstrap";
-import { ProjectDiv } from "./ticket-styles";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState, useEffect } from "react";
 import { DOMAIN } from "../../utilities/utils";
+import { useLocation, useParams } from "react-router";
 import axios from "axios";
-import { Link } from "react-router-dom";
 const Ticket = () => {
+  const params = useParams();
+  console.log(params);
   const ticketId = localStorage.getItem("ticketId");
   const projectId = localStorage.getItem("projectId");
   const user = JSON.parse(localStorage.getItem("user"));
@@ -34,7 +35,7 @@ const Ticket = () => {
   const [member2, setMember2] = useState();
   const [member3, setMember3] = useState();
   const [members, setMembers] = useState();
-  const [memberId, setMemberId] = useState();
+  const [status, setStatus] = useState();
   const [description, setDescription] = useState();
 
   const onTitleChangeHandler = (e) => {
@@ -70,6 +71,9 @@ const Ticket = () => {
   const onChangeAssign3 = (e) => {
     setMember3(e.target.value);
   };
+  const onUpdateTicketStatus = (e) => {
+    setStatus(e.target.value);
+  };
   useEffect(() => {
     const getTicketDate = async () => {
       const ticket = await axios.get(
@@ -83,13 +87,18 @@ const Ticket = () => {
 
   useEffect(() => {
     const getAllMembers = async () => {
-      const allMembers = await axios.get(`${DOMAIN.localhost}/api/v1/members`, {
-        headers: { authorization: `Bearer ${token}` },
-      });
-      setMembers(allMembers?.data?.data);
+      if (user.data.role === "admin") {
+        const allMembers = await axios.get(
+          `${DOMAIN.localhost}/api/v1/members`,
+          {
+            headers: { authorization: `Bearer ${token}` },
+          }
+        );
+        setMembers(allMembers?.data?.data);
+      } else return;
     };
     getAllMembers();
-  }, [token]);
+  }, [token, user.data.role]);
 
   const getComment = (e) => {
     setComment(e.target.value);
@@ -127,6 +136,16 @@ const Ticket = () => {
           member2?.split(" ")[2],
           member3?.split(" ")[2],
         ],
+      },
+      { headers: { authorization: `Bearer ${token}` } }
+    );
+  };
+
+  const onUpdateStatus = async () => {
+    await axios.patch(
+      `${DOMAIN.localhost}/api/v1/tickets/${ticketId}/update-ticket-status`,
+      {
+        status,
       },
       { headers: { authorization: `Bearer ${token}` } }
     );
@@ -649,7 +668,50 @@ const Ticket = () => {
                   </Card.Body>
                 </Card>
               ) : (
-                ""
+                <Card
+                  style={{
+                    color: "darkGrey",
+                    marginTop: "5rem",
+                    border: "none",
+                    boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+                  }}
+                >
+                  <Card.Body>
+                    <Card.Title
+                      style={{ color: `${darkGrey}`, fontSize: "2rem" }}
+                    >
+                      UPDATE TICKET STATUS
+                    </Card.Title>
+                    <Form>
+                      <fieldset
+                        disabled={params.projectName === "1 1 1" ? false : true}
+                      >
+                        <Form.Group>
+                          <Form.Label htmlFor={"updateStatus"}>
+                            Update Status
+                          </Form.Label>
+                          <Form.Select
+                            id="assignDeveloper"
+                            onChange={onUpdateTicketStatus}
+                          >
+                            <option key={1}>select</option>
+                            <option key={2}>waiting</option>
+                            <option key={3}>in progress</option>
+                            <option key={4}>fixed</option>
+                            <option key={5}>cancelled</option>
+                          </Form.Select>
+                        </Form.Group>
+                        <Button
+                          type="submit"
+                          style={{ backgroundColor: `${primaryColor}` }}
+                          onClick={onUpdateStatus}
+                        >
+                          Submit
+                        </Button>
+                      </fieldset>
+                    </Form>
+                  </Card.Body>
+                </Card>
               )}
             </Row>
           </Col>

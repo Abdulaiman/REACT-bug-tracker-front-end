@@ -36,7 +36,6 @@ const Project = () => {
   };
 
   const onSubmitHandler = async (e) => {
-    e.preventDefault();
     try {
       const token = localStorage.getItem("token");
       const data = await axios.post(
@@ -56,8 +55,7 @@ const Project = () => {
   };
 
   // const viewProjectsDetails = e;
-  console.log(name, description);
-  console.log(projects);
+
   return (
     <div
       style={{
@@ -68,7 +66,7 @@ const Project = () => {
     >
       <Container>
         <Row>
-          <Col sm={8}>
+          <Col sm={user.data.role !== "admin" ? 12 : 8}>
             <Card
               style={{
                 backgroundColor: "#ffffff",
