@@ -1,4 +1,12 @@
-import { Button, Container, Form, Row, Col, Card } from "react-bootstrap";
+import {
+  Button,
+  Modal,
+  Container,
+  Form,
+  Row,
+  Col,
+  Card,
+} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
@@ -7,12 +15,18 @@ import { ProjectDiv } from "./profile-styles";
 import { DOMAIN } from "../../utilities/utils";
 const Profile = () => {
   const [member, setMember] = useState();
+  const [members, setMembers] = useState();
   const [newName, setNewName] = useState();
   const [newEmail, setNewEmail] = useState();
   const [password, setPassword] = useState();
   const [newPassword, setNewPassword] = useState();
   const [newPasswordConfirm, setNewPasswordConfirm] = useState();
+  const [memberToAssign, setMemberToAssign] = useState();
+  const [show, setShow] = useState(false);
+  const [show1, setShow1] = useState(false);
+  const [role, setRole] = useState();
   const user = JSON.parse(localStorage.getItem("user"));
+  const token = localStorage.getItem("token");
   const onNewNameChange = (e) => {
     setNewName(e.target.value);
   };
@@ -23,7 +37,6 @@ const Profile = () => {
   const darkGrey = `#696969`;
   const primaryColor = `#3399cc`;
   const lightGrey = `	#F5F5F5`;
-  const token = localStorage.getItem("token");
 
   const getPassword = (e) => {
     setPassword(e.target.value);
@@ -34,6 +47,28 @@ const Profile = () => {
   const getNewPasswordConfirm = (e) => {
     setNewPasswordConfirm(e.target.value);
   };
+
+  const onChangeAssign = async (e) => {
+    setMemberToAssign(e.target.value);
+  };
+  const onChangeRole = async (e) => {
+    setRole(e.target.value);
+  };
+
+  useEffect(() => {
+    const getAllMembers = async () => {
+      if (user.data.role === "admin") {
+        const allMembers = await axios.get(
+          `${DOMAIN.localhost}/api/v1/members`,
+          {
+            headers: { authorization: `Bearer ${token}` },
+          }
+        );
+        setMembers(allMembers?.data?.data);
+      } else return;
+    };
+    getAllMembers();
+  }, [token, user.data.role]);
 
   useEffect(() => {
     const getProjectDetails = async () => {
@@ -71,6 +106,7 @@ const Profile = () => {
         { headers: { authorization: `Bearer ${token}` } }
       );
       alert("password updated succesfully");
+      setShow(false);
     } catch (err) {
       if (
         err?.response?.data?.message.startsWith(
@@ -82,6 +118,20 @@ const Profile = () => {
         );
       alert(err?.response?.data?.message);
     }
+  };
+
+  const onSubmitUpdateRole = async () => {
+    await axios.patch(
+      `${DOMAIN.localhost}/api/v1/members/${
+        memberToAssign?.split(" ")[2]
+      }/update-member-role`,
+      {
+        role,
+      },
+      { headers: { authorization: `Bearer ${token}` } }
+    );
+    alert("member role updated successfully");
+    setShow1(false);
   };
 
   return (
@@ -220,69 +270,82 @@ const Profile = () => {
                     </Button>
                   </Form>
                 </Card.Body>
-              </Card>{" "}
+              </Card>
             </Row>
           </Col>
         </Row>
         <Row>
-          <Col sm={2}></Col>
-          <Col sm={8}>
-            <Card
-              style={{
-                color: "darkGrey",
-                marginTop: "5rem",
-                border: "none",
-                boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
-              }}
-            >
-              <Card.Body>
-                <Card.Title style={{ color: `${darkGrey}`, fontSize: "2rem" }}>
-                  UPDATE MY PASSWORD
-                </Card.Title>
-                <Form>
-                  <fieldset>
-                    <Form.Group className="mb-3">
-                      <Form.Label htmlFor="passwordInput">Password</Form.Label>
-                      <Form.Control
-                        id="passwordInput"
-                        placeholder="password"
-                        onChange={getPassword}
-                      />
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                      <Form.Label htmlFor="newPasswordInput">
-                        New Password
-                      </Form.Label>
-                      <Form.Control
-                        id="newPasswordInput"
-                        placeholder="new password"
-                        onChange={getNewPassword}
-                      />
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                      <Form.Label htmlFor="newPasswordConfirm">
-                        New Password Confirm
-                      </Form.Label>
-                      <Form.Control
-                        id="newPasswordConfirm"
-                        placeholder="new Password confirm"
-                        onChange={getNewPasswordConfirm}
-                      />
-                    </Form.Group>
+          <Button onClick={() => setShow(true)}>update your password</Button>
+          <Modal show={show} onHide={() => setShow(false)}>
+            <Modal.Header closeButton>
+              <Modal.Title>PASSWORD UPDATE</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Card
+                style={{
+                  color: "darkGrey",
+                  marginTop: "5rem",
+                  border: "none",
+                  boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+                }}
+              >
+                <Card.Body>
+                  <Card.Title
+                    style={{ color: `${darkGrey}`, fontSize: "2rem" }}
+                  >
+                    UPDATE MY PASSWORD
+                  </Card.Title>
+                  <Form>
+                    <fieldset>
+                      <Form.Group className="mb-3">
+                        <Form.Label htmlFor="passwordInput">
+                          Password
+                        </Form.Label>
+                        <Form.Control
+                          id="passwordInput"
+                          placeholder="password"
+                          onChange={getPassword}
+                        />
+                      </Form.Group>
+                      <Form.Group className="mb-3">
+                        <Form.Label htmlFor="newPasswordInput">
+                          New Password
+                        </Form.Label>
+                        <Form.Control
+                          id="newPasswordInput"
+                          placeholder="new password"
+                          onChange={getNewPassword}
+                        />
+                      </Form.Group>
+                      <Form.Group className="mb-3">
+                        <Form.Label htmlFor="newPasswordConfirm">
+                          New Password Confirm
+                        </Form.Label>
+                        <Form.Control
+                          id="newPasswordConfirm"
+                          placeholder="new Password confirm"
+                          onChange={getNewPasswordConfirm}
+                        />
+                      </Form.Group>
+                    </fieldset>
+                  </Form>
+                </Card.Body>
+              </Card>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button varient={"secondary"} onClick={() => setShow(false)}>
+                close
+              </Button>
+              <Button
+                type="submit"
+                style={{ backgroundColor: `${primaryColor}` }}
+                onClick={onUPdatePassword}
+              >
+                Submit
+              </Button>
+            </Modal.Footer>
+          </Modal>
 
-                    <Button
-                      type="submit"
-                      style={{ backgroundColor: `${primaryColor}` }}
-                      onClick={onUPdatePassword}
-                    >
-                      Submit
-                    </Button>
-                  </fieldset>
-                </Form>
-              </Card.Body>
-            </Card>
-          </Col>
-          <Col sm={2}></Col>
           {user?.data?.role === "admin" ? (
             <ProjectDiv
               style={{
@@ -290,20 +353,91 @@ const Profile = () => {
                 justifyContent: "center",
               }}
             >
-              <Link to={"/manage-users"}>
-                <Button
-                  type={"submit"}
-                  style={{
-                    backgroundColor: "red",
-                    border: "none",
-                    fontSize: "1.5rem",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  MANAGE USERS ROLES
-                </Button>
-              </Link>
+              <Button
+                style={{
+                  backgroundColor: "red",
+                  border: "none",
+                  fontSize: "1.5rem",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                onClick={() => setShow1(true)}
+              >
+                MANAGE USERS ROLES
+              </Button>
+              <Modal show={show1} onHide={() => setShow1(false)}>
+                <Modal.Header closeButton>
+                  <Modal.Title>manage your users</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  {user.data.role === "admin" ? (
+                    <Card
+                      style={{
+                        color: "darkGrey",
+                        marginTop: "5rem",
+                        border: "none",
+                        boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+                      }}
+                    >
+                      <Card.Body>
+                        <Card.Title
+                          style={{ color: `${darkGrey}`, fontSize: "2rem" }}
+                        >
+                          ASSIGN ROLES
+                        </Card.Title>
+                        <Form>
+                          <Form.Group>
+                            <Form.Label htmlFor={"assignDeveloper"}>
+                              members
+                            </Form.Label>
+                            <Form.Select
+                              id="assignDeveloper"
+                              onChange={onChangeAssign}
+                            >
+                              <option key={3}>select</option>
+                              {members?.map((member) => (
+                                <option key={member?._id}>{`Name:${
+                                  member?.name?.split(" ")[0]
+                                } Id: ${member?._id}`}</option>
+                              ))}
+                            </Form.Select>
+                          </Form.Group>
+                          <Form.Group>
+                            <Form.Label htmlFor={"assignDeveloperRole"}>
+                              Roles
+                            </Form.Label>
+                            <Form.Select
+                              id="assignDeveloperRole"
+                              onChange={onChangeRole}
+                            >
+                              <option>select</option>
+                              <option>developer</option>
+                              <option>product-manager</option>
+                              <option>admin</option>
+                            </Form.Select>
+                          </Form.Group>
+                        </Form>
+                      </Card.Body>
+                    </Card>
+                  ) : (
+                    ""
+                  )}
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button varient={"secondary"} onClick={() => setShow1(false)}>
+                    close
+                  </Button>
+                  <Button
+                    type="submit"
+                    style={{ backgroundColor: `${primaryColor}` }}
+                    onClick={onSubmitUpdateRole}
+                    varient={"primary"}
+                    onSubmit={() => setShow1(false)}
+                  >
+                    Submit
+                  </Button>
+                </Modal.Footer>
+              </Modal>
             </ProjectDiv>
           ) : (
             ""
