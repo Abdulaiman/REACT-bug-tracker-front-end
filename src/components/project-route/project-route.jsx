@@ -2,16 +2,13 @@ import { Button, Form, Container, Row, Col, Card } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { ProjectDiv } from "./project.styles";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import { DOMAIN } from "../../utilities/utils";
-import { setCurrentProject } from "../../store/redux-slices/project-slice";
 import axios from "axios";
 import { Link } from "react-router-dom";
 const darkGrey = `#696969`;
 const primaryColor = `#3399cc`;
 const Project = () => {
   const user = JSON.parse(localStorage.getItem("user"));
-  const dispatch = useDispatch();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [projects, setProjects] = useState();

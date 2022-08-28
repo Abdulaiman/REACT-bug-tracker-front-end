@@ -1,7 +1,5 @@
 import { useState } from "react";
 import axios from "axios";
-import { useDispatch } from "react-redux";
-import { setUser } from "../../store/redux-slices/user-slice";
 import { useNavigate } from "react-router-dom";
 import MyButton from "../button/button-component";
 import { DOMAIN } from "../../utilities/utils";
@@ -21,7 +19,6 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setpassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
-  const dispatch = useDispatch();
 
   const emailHandler = (event) => {
     setEmail(event.target.value);
@@ -53,7 +50,6 @@ const SignUp = () => {
       localStorage.setItem("user", JSON.stringify(data.data));
       navigate("/");
     } catch (err) {
-      console.log(err);
       if (err.response.data.message.startsWith("E11000"))
         alert("email adress is already taken please try a different email");
       if (

@@ -1,3 +1,3 @@
 export const DOMAIN = {
-  localhost: "http://localhost:8000",
+  localhost: "https://aiman-bug-tracker-backend.herokuapp.com",
 };

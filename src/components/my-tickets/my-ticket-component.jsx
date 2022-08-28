@@ -1,25 +1,15 @@
-import {
-  Button,
-  Container,
-  Form,
-  Row,
-  Col,
-  Card,
-  FormControl,
-} from "react-bootstrap";
+import { Button, Container, Row, Col, Card } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Link } from "react-router-dom";
-import { Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { projectSelector } from "../../store/selectors/redux-selectors.";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
+
 import { DOMAIN } from "../../utilities/utils";
+
 import { ProjectDiv } from "./my-ticket-styles";
 const MyTicket = () => {
   const darkGrey = `#696969`;
   const primaryColor = `#3399cc`;
-  const lightGrey = `	#F5F5F5`;
   const [myTickets, setMyTickets] = useState();
   const [assignedTickets, setAssignedTickets] = useState();
   const token = localStorage.getItem("token");
@@ -31,7 +21,6 @@ const MyTicket = () => {
           headers: { authorization: `Bearer ${token}` },
         }
       );
-      console.log({ ME: userData });
       setMyTickets(userData?.data?.member?.myTickets);
       setAssignedTickets(userData?.data?.member?.assignedTickets);
     };
@@ -68,7 +57,7 @@ const MyTicket = () => {
                   color: `${darkGrey}`,
                 }}
               >
-                Type
+                Title
               </Card.Title>
               <Card.Title
                 style={{
@@ -99,7 +88,7 @@ const MyTicket = () => {
               return (
                 <ProjectDiv key={ticket._id}>
                   <h3 style={{ color: `${darkGrey}`, fontSize: "1.5rem" }}>
-                    {ticket?.type}
+                    {ticket?.title}
                   </h3>
                   <h5 style={{ color: `${darkGrey}` }}>
                     {ticket?.createdAt.slice(0, 10)}
@@ -148,7 +137,7 @@ const MyTicket = () => {
                   color: `${darkGrey}`,
                 }}
               >
-                Type
+                Title
               </Card.Title>
               <Card.Title
                 style={{
@@ -179,7 +168,7 @@ const MyTicket = () => {
               return (
                 <ProjectDiv key={ticket._id}>
                   <h3 style={{ color: `${darkGrey}`, fontSize: "1.5rem" }}>
-                    {ticket?.type}
+                    {ticket?.title}
                   </h3>
                   <h5 style={{ color: `${darkGrey}` }}>
                     {ticket?.createdAt.slice(0, 10)}

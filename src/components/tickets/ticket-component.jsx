@@ -6,22 +6,21 @@ import {
   Col,
   Card,
   FormControl,
+  Modal,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState, useEffect } from "react";
 import { DOMAIN } from "../../utilities/utils";
-import { useLocation, useParams } from "react-router";
+import { useParams } from "react-router";
 import axios from "axios";
 const Ticket = () => {
   const params = useParams();
-  console.log(params);
   const ticketId = localStorage.getItem("ticketId");
   const projectId = localStorage.getItem("projectId");
   const user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
   const darkGrey = `#696969`;
   const primaryColor = `#3399cc`;
-  const lightGrey = `	#F5F5F5`;
   const [ticketData, setTicket] = useState();
   const [comment, setComment] = useState();
   const [title, setTitle] = useState();
@@ -36,7 +35,9 @@ const Ticket = () => {
   const [member3, setMember3] = useState();
   const [members, setMembers] = useState();
   const [status, setStatus] = useState();
+  const [statusAdmin, setStatusAdmin] = useState();
   const [description, setDescription] = useState();
+  const [show, setShow] = useState(false);
 
   const onTitleChangeHandler = (e) => {
     setTitle(e.target.value);
@@ -73,6 +74,9 @@ const Ticket = () => {
   };
   const onUpdateTicketStatus = (e) => {
     setStatus(e.target.value);
+  };
+  const onStatusChange = (e) => {
+    setStatusAdmin(e.target.value);
   };
   useEffect(() => {
     const getTicketDate = async () => {
@@ -112,7 +116,7 @@ const Ticket = () => {
     );
   };
   const onEditTicket = async () => {
-    const edited = await axios.patch(
+    await axios.patch(
       `${DOMAIN.localhost}/api/v1/tickets/${ticketId}/update-ticket`,
       {
         type,
@@ -122,10 +126,12 @@ const Ticket = () => {
         foundIn,
         priority,
         description,
+        status: statusAdmin,
+        title,
       },
       { headers: { authorization: `Bearer ${token}` } }
     );
-    console.log(edited);
+    window.location.reload();
   };
   const onAssignDevelopers = async (e) => {
     await axios.patch(
@@ -153,13 +159,20 @@ const Ticket = () => {
 
   return (
     <div>
-      <Container fluid>
+      <Container
+        style={{
+          backgroundColor: "#f5f5f5",
+          minHeight: "100vh",
+        }}
+        fluid
+      >
         <Row>
           <Col>
             <Row>
               <Card
                 style={{
-                  backgroundColor: "#f5f5f5",
+                  // backgroundColor: "#f5f5f5",
+                  minHeight: "100vh",
                   color: "black",
                   marginTop: "5rem",
                   border: "none",
@@ -194,6 +207,28 @@ const Ticket = () => {
                     >
                       PROPERTIES
                     </Card.Title>
+                    <Row
+                      style={{
+                        fontSize: "2.5rem",
+                        borderBottom: "1px solid grey",
+                        marginTop: "1.5rem",
+                      }}
+                    >
+                      <Col
+                        style={{
+                          fontSize: "2rem",
+                        }}
+                      >
+                        TITLE:
+                      </Col>
+                      <Col
+                        style={{
+                          fontSize: "2rem",
+                        }}
+                      >
+                        {ticketData?.title}
+                      </Col>
+                    </Row>
                     <Row
                       style={{
                         fontSize: "2.5rem",
@@ -536,127 +571,166 @@ const Ticket = () => {
                 </Card.Body>
               </Card>
             </Row>
-            <Row>
+            <Row style={{ marginTop: "3rem" }}>
               {user.data.role === "admin" ? (
-                <Card
-                  style={{
-                    color: "darkGrey",
-                    marginTop: "5rem",
-                    border: "none",
-                    boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
-                  }}
-                >
-                  <Card.Body>
-                    <Card.Title
-                      style={{ color: `${darkGrey}`, fontSize: "2rem" }}
-                    >
-                      UPDATE TICKET
-                    </Card.Title>
-                    <Form>
-                      <Form.Group className="mb-3">
-                        <Form.Label htmlFor="titleInput">Title</Form.Label>
-                        <Form.Control
-                          id="titleInput"
-                          placeholder="title"
-                          onChange={onTitleChangeHandler}
-                        />
-                      </Form.Group>
-                      <Form.Group className="mb-3">
-                        <Form.Label htmlFor={"featureInput"}>
-                          feature
-                        </Form.Label>
-                        <FormControl
-                          id="featureInput"
-                          placeholder="feature"
-                          onChange={onFeatureChangeHandler}
-                        />
-                      </Form.Group>
+                <>
+                  <Button onClick={() => setShow(true)}>UPDATE TICKET</Button>
+                  <Modal show={show} onHide={() => setShow(false)}>
+                    <Modal.Header closeButton>
+                      <Modal.Title>Ticket</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      <Card
+                        style={{
+                          color: "darkGrey",
+                          marginTop: "5rem",
+                          border: "none",
+                          boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+                        }}
+                      >
+                        <Card.Body>
+                          <Card.Title
+                            style={{ color: `${darkGrey}`, fontSize: "2rem" }}
+                          >
+                            UPDATE TICKET
+                          </Card.Title>
+                          <Form>
+                            <Form.Group className="mb-3">
+                              <Form.Label htmlFor="titleInput">
+                                Title
+                              </Form.Label>
+                              <Form.Control
+                                id="titleInput"
+                                placeholder="title"
+                                onChange={onTitleChangeHandler}
+                              />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                              <Form.Label htmlFor={"featureInput"}>
+                                feature
+                              </Form.Label>
+                              <FormControl
+                                id="featureInput"
+                                placeholder="feature"
+                                onChange={onFeatureChangeHandler}
+                              />
+                            </Form.Group>
 
-                      <Form.Group>
-                        <Form.Label htmlFor={"typeOfBug"}>type</Form.Label>
-                        <Form.Select
-                          id="typeOfBug"
-                          onChange={onTypeChangeHandler}
-                        >
-                          <option>select</option>
-                          <option>bug</option>
-                          <option>feature request</option>
-                          <option>others</option>
-                        </Form.Select>
-                      </Form.Group>
-                      <Form.Group>
-                        <Form.Label htmlFor={"typeOfBrowser"}>
-                          Browser
-                        </Form.Label>
-                        <Form.Select
-                          id="typeOfBrowser"
-                          onChange={onBrowserChangeHandler}
-                        >
-                          <option>select</option>
-                          <option>chrome</option>
-                          <option>firefox</option>
-                          <option>safari</option>
-                          <option>internet explorer</option>
-                          <option>microsoft edge</option>
-                          <option>opera</option>
-                          <option>mobile</option>
-                        </Form.Select>
-                      </Form.Group>
-                      <Form.Group>
-                        <Form.Label htmlFor={"typeOfOperatingSyster"}>
-                          Operating system
-                        </Form.Label>
-                        <Form.Select
-                          id="typeOfOperatingSyster"
-                          onChange={onOperatingSystemChangeHandler}
-                        >
-                          <option>select</option>
-                          <option>mac Os</option>
-                          <option>linux</option>
-                          <option>windows</option>
-                          <option>mobile: Android</option>
-                          <option>mobile: Ios</option>
-                        </Form.Select>
-                      </Form.Group>
-                      <Form.Group>
-                        <Form.Label htmlFor={"findIn"}>Found in</Form.Label>
-                        <Form.Select
-                          id="findIn"
-                          onChange={onFoundInChangeHandler}
-                        >
-                          <option>select</option>
-                          <option>Production</option>
-                          <option>development</option>
-                          <option>testing</option>
-                        </Form.Select>
-                      </Form.Group>
-                      <Form.Group>
-                        <Form.Label htmlFor={"typeOfPriotity"}>
-                          priority
-                        </Form.Label>
-                        <Form.Select
-                          id="typeOfPriotity"
-                          onChange={onPriorityChangeHandler}
-                        >
-                          <option>select</option>
-                          <option>medium</option>
-                          <option>high</option>
-                          <option>critical</option>
-                          <option>critical high-priority</option>
-                        </Form.Select>
-                      </Form.Group>
-                      <Form.Group className="mb-3">
-                        <Form.Label htmlFor="descriptionInput">
-                          Description
-                        </Form.Label>
-                        <Form.Control
-                          as="textarea"
-                          row={4}
-                          id="descriptionInput"
-                          placeholder={"Description"}
-                          onChange={onDescriptionChangeHandler}
-                        />
-                      </Form.Group>
+                            <Form.Group>
+                              <Form.Label htmlFor={"typeOfBug"}>
+                                type
+                              </Form.Label>
+                              <Form.Select
+                                id="typeOfBug"
+                                onChange={onTypeChangeHandler}
+                              >
+                                <option>select</option>
+                                <option>bug</option>
+                                <option>feature request</option>
+                                <option>others</option>
+                              </Form.Select>
+                            </Form.Group>
+                            <Form.Group>
+                              <Form.Label htmlFor={"typeOfBrowser"}>
+                                Browser
+                              </Form.Label>
+                              <Form.Select
+                                id="typeOfBrowser"
+                                onChange={onBrowserChangeHandler}
+                              >
+                                <option>select</option>
+                                <option>chrome</option>
+                                <option>firefox</option>
+                                <option>safari</option>
+                                <option>internet explorer</option>
+                                <option>microsoft edge</option>
+                                <option>opera</option>
+                                <option>mobile</option>
+                              </Form.Select>
+                            </Form.Group>
+                            <Form.Group>
+                              <Form.Label htmlFor={"typeOfOperatingSyster"}>
+                                Operating system
+                              </Form.Label>
+                              <Form.Select
+                                id="typeOfOperatingSyster"
+                                onChange={onOperatingSystemChangeHandler}
+                              >
+                                <option>select</option>
+                                <option>mac Os</option>
+                                <option>linux</option>
+                                <option>windows</option>
+                                <option>mobile: Android</option>
+                                <option>mobile: Ios</option>
+                              </Form.Select>
+                            </Form.Group>
+                            <Form.Group>
+                              <Form.Label htmlFor={"typeOfStatus"}>
+                                Status
+                              </Form.Label>
+                              <Form.Select
+                                id="typeOfStatus"
+                                onChange={onStatusChange}
+                              >
+                                <option>select</option>
+                                <option>fixed</option>
+                                <option>in progress</option>
+                                <option>waiting</option>
+                                <option>cancelled</option>
+                              </Form.Select>
+                            </Form.Group>
+                            <Form.Group>
+                              <Form.Label htmlFor={"findIn"}>
+                                Found in
+                              </Form.Label>
+                              <Form.Select
+                                id="findIn"
+                                onChange={onFoundInChangeHandler}
+                              >
+                                <option>select</option>
+                                <option>Production</option>
+                                <option>development</option>
+                                <option>testing</option>
+                              </Form.Select>
+                            </Form.Group>
+                            <Form.Group>
+                              <Form.Label htmlFor={"typeOfPriotity"}>
+                                priority
+                              </Form.Label>
+                              <Form.Select
+                                id="typeOfPriotity"
+                                onChange={onPriorityChangeHandler}
+                              >
+                                <option>select</option>
+                                <option>medium</option>
+                                <option>high</option>
+                                <option>critical</option>
+                                <option>critical high-priority</option>
+                              </Form.Select>
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                              <Form.Label htmlFor="descriptionInput">
+                                Description
+                              </Form.Label>
+                              <Form.Control
+                                as="textarea"
+                                row={4}
+                                id="descriptionInput"
+                                placeholder={"Description"}
+                                onChange={onDescriptionChangeHandler}
+                              />
+                            </Form.Group>
+                          </Form>
+                        </Card.Body>
+                      </Card>
+                    </Modal.Body>
+                    <Modal.Footer>
+                      <Button
+                        varient={"secondary"}
+                        onClick={() => setShow(false)}
+                      >
+                        close
+                      </Button>
                       <Button
                         type="submit"
                         style={{ backgroundColor: `${primaryColor}` }}
@@ -664,9 +738,9 @@ const Ticket = () => {
                       >
                         Submit
                       </Button>
-                    </Form>
-                  </Card.Body>
-                </Card>
+                    </Modal.Footer>
+                  </Modal>
+                </>
               ) : (
                 <Card
                   style={{

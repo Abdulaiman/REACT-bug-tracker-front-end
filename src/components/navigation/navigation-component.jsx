@@ -7,7 +7,7 @@ import {
 } from "./navigation.styles";
 export const Navigation = () => {
   const logoutHandler = () => {
-    localStorage.removeItem("token");
+    localStorage.clear();
   };
 
   return (

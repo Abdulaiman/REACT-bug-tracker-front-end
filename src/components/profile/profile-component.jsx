@@ -9,7 +9,6 @@ import {
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { ProjectDiv } from "./profile-styles";
 import { DOMAIN } from "../../utilities/utils";
@@ -136,7 +135,12 @@ const Profile = () => {
 
   return (
     <div style={{ backgroundColor: `${lightGrey}` }}>
-      <Container>
+      <Container
+        style={{
+          backgroundColor: "#f5f5f5",
+          minHeight: "100vh",
+        }}
+      >
         <Row>
           <Col>
             <Row>

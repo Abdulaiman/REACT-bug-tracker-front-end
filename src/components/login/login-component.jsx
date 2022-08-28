@@ -1,11 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
-import { useDispatch } from "react-redux";
-import { setUser } from "../../store/redux-slices/user-slice";
 import { Link, useNavigate } from "react-router-dom";
 import "./login-component.styles.jsx";
 import MyButton from "../button/button-component";
-import { loginButton } from "./login-component.styles.jsx";
 import { DOMAIN } from "../../utilities/utils";
 import {
   LoginContainer,
@@ -22,7 +19,6 @@ const Login = () => {
   const navigate = useNavigate();
   const [value1, setValue1] = useState("");
   const [value2, setValue2] = useState("");
-  const dispatch = useDispatch();
 
   const email = (event) => {
     setValue1(event.target.value);
