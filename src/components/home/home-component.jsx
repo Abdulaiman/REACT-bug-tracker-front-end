@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { DOMAIN } from "../../utilities/utils";
+import { Container, Row, Col } from "react-bootstrap";
 import "chart.js/auto";
 import { Doughnut } from "react-chartjs-2";
 import { ChartContainer, ChartParentContainer } from "./home.styles";
@@ -76,26 +77,28 @@ const Home = () => {
   ////
   ////
   return (
-    <ChartParentContainer>
-      {/* Doughnut component for ticket by status */}
+    <Container fluid as={ChartParentContainer}>
+      <ChartParentContainer as={Row}>
+        {/* Doughnut component for ticket by status */}
 
-      <ChartContainer>
-        <h1>TICKETS BY STATUS</h1>
-        <Doughnut data={TicketByStatus} />
-      </ChartContainer>
+        <ChartContainer as={Col}>
+          <h1>TICKETS BY STATUS</h1>
+          <Doughnut data={TicketByStatus} />
+        </ChartContainer>
 
-      {/* Doughnut component for ticket by priority */}
-      <ChartContainer>
-        <h1>TICKETS BY PRIORITY</h1>
-        <Doughnut data={TicketByPriority} />
-      </ChartContainer>
+        {/* Doughnut component for ticket by priority */}
+        <ChartContainer as={Col}>
+          <h1>TICKETS BY PRIORITY</h1>
+          <Doughnut data={TicketByPriority} />
+        </ChartContainer>
 
-      {/* Doughnut component for ticket by type */}
-      <ChartContainer>
-        <h1>TICKETS BY TYPE</h1>
-        <Doughnut data={TicketByType} />
-      </ChartContainer>
-    </ChartParentContainer>
+        {/* Doughnut component for ticket by type */}
+        <ChartContainer as={Col}>
+          <h1>TICKETS BY TYPE</h1>
+          <Doughnut data={TicketByType} />
+        </ChartContainer>
+      </ChartParentContainer>
+    </Container>
   );
 };
 

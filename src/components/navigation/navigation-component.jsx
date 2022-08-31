@@ -1,4 +1,5 @@
 import { FaBug } from "react-icons/fa";
+import { Button, Container, Row, Col, Card } from "react-bootstrap";
 import {
   NavContainer,
   LinksContainer,
@@ -11,22 +12,32 @@ export const Navigation = () => {
   };
 
   return (
-    <NavContainer>
-      <LogoContainer>
-        <Links to={"/"}>{<FaBug />}</Links>
-      </LogoContainer>
-      <div>
-        <LinksContainer as={"ul"}>
-          <Links to={"/projects"}>PROJECTS</Links>
-
-          <Links to={"/tickets"}>TICKETS</Links>
-
-          <Links to={"/profile"}>PROFILE</Links>
-          <Links to={"/login"} onClick={logoutHandler}>
-            Logout
-          </Links>
-        </LinksContainer>
-      </div>
+    <NavContainer fluid as={Container}>
+      <Row as={NavContainer}>
+        <Col>
+          <LogoContainer>
+            <Links to={"/"}>{<FaBug />}</Links>
+          </LogoContainer>
+        </Col>
+        <Col as={LinksContainer}>
+          <Row>
+            <Col>
+              <Links to={"/projects"}>PROJECTS</Links>
+            </Col>
+            <Col>
+              <Links to={"/tickets"}>TICKETS</Links>
+            </Col>
+            <Col>
+              <Links to={"/profile"}>PROFILE</Links>
+            </Col>
+            <Col>
+              <Links to={"/login"} onClick={logoutHandler}>
+                Logout
+              </Links>
+            </Col>
+          </Row>
+        </Col>
+      </Row>
     </NavContainer>
   );
 };
