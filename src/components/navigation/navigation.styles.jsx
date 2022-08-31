@@ -18,7 +18,6 @@ export const LinksContainer = Styled.div`
 display:flex;
 justify-content: space-between;
 width: 30rem;
-margin-right: 15rem;
 @media (max-width: 1160px) {
  width: 15rem;
  margin-right:2rem;

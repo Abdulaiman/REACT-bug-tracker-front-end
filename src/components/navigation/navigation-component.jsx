@@ -1,5 +1,5 @@
 import { FaBug } from "react-icons/fa";
-import { Button, Container, Row, Col, Card } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import {
   NavContainer,
   LinksContainer,
