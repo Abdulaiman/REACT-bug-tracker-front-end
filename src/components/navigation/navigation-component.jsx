@@ -6,7 +6,7 @@ import {
   Links,
   LogoContainer,
 } from "./navigation.styles";
-export const Navigation = () => {
+export const Navigation:React.Fc = ():JSX.Element => {
   const logoutHandler = () => {
     localStorage.clear();
   };

@@ -12,17 +12,17 @@ const Project = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [projects, setProjects] = useState();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const getProjects = async () => {
-      const token = localStorage.getItem("token");
       const data = await axios.get(`${DOMAIN.localhost}/api/v1/projects`, {
         headers: { authorization: `Bearer ${token}` },
       });
       setProjects(data.data.payload);
     };
     getProjects();
-  }, []);
+  }, [token]);
 
   const getName = (e) => {
     setName(e.target.value);
@@ -33,6 +33,7 @@ const Project = () => {
   };
 
   const onSubmitHandler = async (e) => {
+    e.preventDefault();
     try {
       const token = localStorage.getItem("token");
       const data = await axios.post(
@@ -45,6 +46,8 @@ const Project = () => {
           headers: { authorization: `Bearer ${token}` },
         }
       );
+      setName("");
+      setDescription("");
       setProjects(data.data.payload);
     } catch (err) {
       alert(err);
@@ -154,6 +157,7 @@ const Project = () => {
                       <Form.Group className="mb-3">
                         <Form.Label htmlFor="titleInput">Title</Form.Label>
                         <Form.Control
+                          value={name}
                           id="titleInput"
                           placeholder="title"
                           onChange={getName}
@@ -164,6 +168,7 @@ const Project = () => {
                           Description
                         </Form.Label>
                         <Form.Control
+                          value={description}
                           as="textarea"
                           row={3}
                           id="descriptionInput"

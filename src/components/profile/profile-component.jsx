@@ -6,6 +6,7 @@ import {
   Row,
   Col,
   Card,
+  Alert,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useState } from "react";
@@ -22,6 +23,7 @@ const Profile = () => {
   const [newPasswordConfirm, setNewPasswordConfirm] = useState();
   const [memberToAssign, setMemberToAssign] = useState();
   const [show, setShow] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
   const [show1, setShow1] = useState(false);
   const [role, setRole] = useState();
   const user = JSON.parse(localStorage.getItem("user"));
@@ -56,6 +58,13 @@ const Profile = () => {
 
   useEffect(() => {
     const getAllMembers = async () => {
+      const memberDetails = await axios.get(
+        `${DOMAIN.localhost}/api/v1/members/me`,
+        {
+          headers: { authorization: `Bearer ${token}` },
+        }
+      );
+      setMember(memberDetails.data.member);
       if (user.data.role === "admin") {
         const allMembers = await axios.get(
           `${DOMAIN.localhost}/api/v1/members`,
@@ -69,20 +78,8 @@ const Profile = () => {
     getAllMembers();
   }, [token, user.data.role]);
 
-  useEffect(() => {
-    const getProjectDetails = async () => {
-      const memberDetails = await axios.get(
-        `${DOMAIN.localhost}/api/v1/members/me`,
-        {
-          headers: { authorization: `Bearer ${token}` },
-        }
-      );
-      setMember(memberDetails.data.member);
-    };
-    getProjectDetails();
-  }, [token]);
-
-  const onUpdateProfileHandler = async () => {
+  const onUpdateProfileHandler = async (e) => {
+    e.preventDefault();
     await axios.patch(
       `${DOMAIN.localhost}/api/v1/members/update-me`,
       {
@@ -91,9 +88,20 @@ const Profile = () => {
       },
       { headers: { authorization: `Bearer ${token}` } }
     );
+    const memberDetails = await axios.get(
+      `${DOMAIN.localhost}/api/v1/members/me`,
+      {
+        headers: { authorization: `Bearer ${token}` },
+      }
+    );
+    setMember(memberDetails.data.member);
+    setShowAlert(true);
+    setNewName("");
+    setNewEmail("");
   };
 
   const onUPdatePassword = async (e) => {
+    e.preventDefault();
     try {
       await axios.patch(
         `${DOMAIN.localhost}/api/v1/members/update-password`,
@@ -104,8 +112,8 @@ const Profile = () => {
         },
         { headers: { authorization: `Bearer ${token}` } }
       );
-      alert("password updated succesfully");
       setShow(false);
+      setShowAlert();
     } catch (err) {
       if (
         err?.response?.data?.message.startsWith(
@@ -119,7 +127,8 @@ const Profile = () => {
     }
   };
 
-  const onSubmitUpdateRole = async () => {
+  const onSubmitUpdateRole = async (e) => {
+    e.preventDefault();
     await axios.patch(
       `${DOMAIN.localhost}/api/v1/members/${
         memberToAssign?.split(" ")[2]
@@ -129,7 +138,7 @@ const Profile = () => {
       },
       { headers: { authorization: `Bearer ${token}` } }
     );
-    alert("member role updated successfully");
+    setShowAlert(true);
     setShow1(false);
   };
 
@@ -153,6 +162,14 @@ const Profile = () => {
                 }}
               >
                 <Card.Body style={{ color: `${darkGrey}` }}>
+                  <Alert
+                    variant="success"
+                    show={showAlert}
+                    onClose={() => setShowAlert(false)}
+                    dismissible
+                  >
+                    Done
+                  </Alert>
                   <Card.Title
                     style={{
                       fontSize: "2rem",
@@ -250,6 +267,7 @@ const Profile = () => {
                         Edit Name
                       </Form.Label>
                       <Form.Control
+                        value={newName}
                         placeholder="new name"
                         id={"changeProjectName"}
                         onChange={onNewNameChange}
@@ -260,6 +278,7 @@ const Profile = () => {
                         Edit Email
                       </Form.Label>
                       <Form.Control
+                        value={newEmail}
                         placeholder="new Email"
                         id={"changeProject description"}
                         onChange={onNewEmailChange}
@@ -285,56 +304,41 @@ const Profile = () => {
               <Modal.Title>PASSWORD UPDATE</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <Card
-                style={{
-                  color: "darkGrey",
-                  marginTop: "5rem",
-                  border: "none",
-                  boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
-                }}
-              >
-                <Card.Body>
-                  <Card.Title
-                    style={{ color: `${darkGrey}`, fontSize: "2rem" }}
-                  >
-                    UPDATE MY PASSWORD
-                  </Card.Title>
-                  <Form>
-                    <fieldset>
-                      <Form.Group className="mb-3">
-                        <Form.Label htmlFor="passwordInput">
-                          Password
-                        </Form.Label>
-                        <Form.Control
-                          id="passwordInput"
-                          placeholder="password"
-                          onChange={getPassword}
-                        />
-                      </Form.Group>
-                      <Form.Group className="mb-3">
-                        <Form.Label htmlFor="newPasswordInput">
-                          New Password
-                        </Form.Label>
-                        <Form.Control
-                          id="newPasswordInput"
-                          placeholder="new password"
-                          onChange={getNewPassword}
-                        />
-                      </Form.Group>
-                      <Form.Group className="mb-3">
-                        <Form.Label htmlFor="newPasswordConfirm">
-                          New Password Confirm
-                        </Form.Label>
-                        <Form.Control
-                          id="newPasswordConfirm"
-                          placeholder="new Password confirm"
-                          onChange={getNewPasswordConfirm}
-                        />
-                      </Form.Group>
-                    </fieldset>
-                  </Form>
-                </Card.Body>
-              </Card>
+              <Form>
+                <fieldset>
+                  <Form.Group className="mb-3">
+                    <Form.Label htmlFor="passwordInput">Password</Form.Label>
+                    <Form.Control
+                      value={password}
+                      id="passwordInput"
+                      placeholder="password"
+                      onChange={getPassword}
+                    />
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label htmlFor="newPasswordInput">
+                      New Password
+                    </Form.Label>
+                    <Form.Control
+                      value={newPassword}
+                      id="newPasswordInput"
+                      placeholder="new password"
+                      onChange={getNewPassword}
+                    />
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label htmlFor="newPasswordConfirm">
+                      New Password Confirm
+                    </Form.Label>
+                    <Form.Control
+                      value={newPasswordConfirm}
+                      id="newPasswordConfirm"
+                      placeholder="new Password confirm"
+                      onChange={getNewPasswordConfirm}
+                    />
+                  </Form.Group>
+                </fieldset>
+              </Form>
             </Modal.Body>
             <Modal.Footer>
               <Button varient={"secondary"} onClick={() => setShow(false)}>
@@ -375,54 +379,38 @@ const Profile = () => {
                 </Modal.Header>
                 <Modal.Body>
                   {user.data.role === "admin" ? (
-                    <Card
-                      style={{
-                        color: "darkGrey",
-                        marginTop: "5rem",
-                        border: "none",
-                        boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
-                      }}
-                    >
-                      <Card.Body>
-                        <Card.Title
-                          style={{ color: `${darkGrey}`, fontSize: "2rem" }}
+                    <Form>
+                      <Form.Group>
+                        <Form.Label htmlFor={"assignDeveloper"}>
+                          members
+                        </Form.Label>
+                        <Form.Select
+                          id="assignDeveloper"
+                          onChange={onChangeAssign}
                         >
-                          ASSIGN ROLES
-                        </Card.Title>
-                        <Form>
-                          <Form.Group>
-                            <Form.Label htmlFor={"assignDeveloper"}>
-                              members
-                            </Form.Label>
-                            <Form.Select
-                              id="assignDeveloper"
-                              onChange={onChangeAssign}
-                            >
-                              <option key={3}>select</option>
-                              {members?.map((member) => (
-                                <option key={member?._id}>{`Name:${
-                                  member?.name?.split(" ")[0]
-                                } Id: ${member?._id}`}</option>
-                              ))}
-                            </Form.Select>
-                          </Form.Group>
-                          <Form.Group>
-                            <Form.Label htmlFor={"assignDeveloperRole"}>
-                              Roles
-                            </Form.Label>
-                            <Form.Select
-                              id="assignDeveloperRole"
-                              onChange={onChangeRole}
-                            >
-                              <option>select</option>
-                              <option>developer</option>
-                              <option>product-manager</option>
-                              <option>admin</option>
-                            </Form.Select>
-                          </Form.Group>
-                        </Form>
-                      </Card.Body>
-                    </Card>
+                          <option key={3}>select</option>
+                          {members?.map((member) => (
+                            <option key={member?._id}>{`Name:${
+                              member?.name?.split(" ")[0]
+                            } Id: ${member?._id}`}</option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                      <Form.Group>
+                        <Form.Label htmlFor={"assignDeveloperRole"}>
+                          Roles
+                        </Form.Label>
+                        <Form.Select
+                          id="assignDeveloperRole"
+                          onChange={onChangeRole}
+                        >
+                          <option>select</option>
+                          <option>developer</option>
+                          <option>product-manager</option>
+                          <option>admin</option>
+                        </Form.Select>
+                      </Form.Group>
+                    </Form>
                   ) : (
                     ""
                   )}
