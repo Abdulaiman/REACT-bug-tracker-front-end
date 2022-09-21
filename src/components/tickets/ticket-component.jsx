@@ -172,7 +172,8 @@ const Ticket = () => {
     setMember3("");
   };
 
-  const onUpdateStatus = async () => {
+  const onUpdateStatus = async (e) => {
+    e.preventDefault();
     await axios.patch(
       `${DOMAIN.localhost}/api/v1/tickets/${ticketId}/update-ticket-status`,
       {
@@ -180,6 +181,15 @@ const Ticket = () => {
       },
       { headers: { authorization: `Bearer ${token}` } }
     );
+    const ticket = await axios.get(
+      `${DOMAIN.localhost}/api/v1/projects/${projectId}/tickets/${ticketId}`,
+      { headers: { authorization: `Bearer ${token}` } }
+    );
+    setTicket(ticket?.data?.ticket);
+    setShowAlert(true);
+    setMember1("");
+    setMember2("");
+    setMember3("");
   };
 
   return (
