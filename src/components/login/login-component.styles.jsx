@@ -15,10 +15,12 @@ export const LoginContainer = styled.div`
 `;
 
 export const FormContainer = styled.div`
-  height: 25rem;
+  min-height: 30rem;
   width: 20rem;
   background-color: ${lightGrey};
   border-radius: 2rem;
+  padding: 2rem;
+  padding-top: 0;
 `;
 export const InputContainer = styled.div`
   display: flex;
@@ -61,4 +63,6 @@ export const ButtonContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 1rem;
+  margin-top: 0;
 `;

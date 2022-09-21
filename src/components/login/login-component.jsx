@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import "./login-component.styles.jsx";
 import MyButton from "../button/button-component";
 import { DOMAIN } from "../../utilities/utils";
+import { Button, Row, Col } from "react-bootstrap";
 import {
   LoginContainer,
   FormContainer,
@@ -19,7 +20,6 @@ const Login = () => {
   const navigate = useNavigate();
   const [value1, setValue1] = useState("");
   const [value2, setValue2] = useState("");
-
   const email = (event) => {
     setValue1(event.target.value);
   };
@@ -44,6 +44,25 @@ const Login = () => {
     } catch (err) {
       alert("incorrect email address or password please check and try again");
     }
+  };
+  const demoAdmin = async () => {
+    const data = await axios.post(`${DOMAIN.localhost}/api/v1/members/login`, {
+      email: "afrigarb@gmail.com",
+      password: "test1234",
+    });
+    localStorage.setItem("token", data.data.token);
+    localStorage.setItem("user", JSON.stringify(data.data));
+    navigate("/");
+  };
+  const demoDeveloper = async () => {
+    const data = await axios.post(`${DOMAIN.localhost}/api/v1/members/login`, {
+      email: "testing@test.com",
+      password: "test1234",
+    });
+
+    localStorage.setItem("token", data.data.token);
+    localStorage.setItem("user", JSON.stringify(data.data));
+    navigate("/");
   };
 
   return (
@@ -78,6 +97,18 @@ const Login = () => {
               Log in
             </MyButton>
           </ButtonContainer>
+          <Row>
+            <Col>
+              <Button variant="secondary" onClick={demoAdmin}>
+                Demo Admin
+              </Button>
+            </Col>
+            <Col>
+              <Button variant="info" onClick={demoDeveloper}>
+                Demo Developer
+              </Button>
+            </Col>
+          </Row>
         </form>
       </FormContainer>
     </LoginContainer>
